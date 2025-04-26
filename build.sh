@@ -10,7 +10,6 @@ common_files="common-files"
 system_root="SYSTEM-root"
 copy="copy"
 
-
 etc_path="${system_root}/etc"
 autostart_path="${system_root}/usr/bin"
 modules_load_path="${system_root}/usr/lib/modules-load.d"
@@ -30,47 +29,40 @@ mkdir ${mount_point}
 echo "Mounting CoreELEC boot partition"
 sudo mount -o loop,offset=4194304 ${source_img_name}.img ${mount_point}
 
-
 echo "Decompressing SYSTEM image"
 sudo unsquashfs -d ${system_root} ${mount_point}/SYSTEM
 
-
-
-echo "Copying pr file path"
-sudo cp ${copy}/pr ${system_root}/usr/bin
-sudo chmod 0775 ${system_root}/usr/bin/pr
-
-
-echo "Copying kodi.sh file path"
-sudo cp ${copy}/kodi.sh ${system_root}/usr/lib/kodi
-sudo chmod 0775 ${system_root}/usr/lib/kodi/kodi.sh
-
-
-
-
-# 赋予 /usr/bin/pr 文件执行权限
-sudo chmod +x ${system_root}/usr/bin/pr
-
-# 检查权限是否设置成功
-if [ -x ${system_root}/usr/bin/pr ]; then
-    echo "/usr/bin/pr 已成功赋予执行权限。"
+# 复制 pr 文件并赋予执行权限
+pr_dest="${system_root}/usr/bin/pr"
+sudo cp ${copy}/pr ${pr_dest}
+if [ $? -eq 0 ]; then
+    sudo chmod +x ${pr_dest}
+    if [ -x ${pr_dest} ]; then
+        echo "/usr/bin/pr 已成功赋予执行权限。"
+    else
+        echo "赋予 /usr/bin/pr 执行权限失败。"
+        exit 1
+    fi
 else
-    echo "赋予 /usr/bin/pr 执行权限失败。"
+    echo "复制 pr 文件到 /usr/bin 失败。"
     exit 1
 fi
 
-# 赋予 /usr/bin/updatecheck 文件执行权限
-sudo chmod +x ${system_root}/usr/lib/kodi/kodi.sh
-
-# 检查权限是否设置成功
-if [ -x ${system_root}/usr/lib/kodi/kodi.sh ]; then
-    echo "/usr/lib/kodi/kodi.sh 已成功赋予执行权限。"
+# 复制 kodi.sh 文件并赋予执行权限
+kodi_sh_dest="${system_root}/usr/lib/kodi/kodi.sh"
+sudo cp ${copy}/kodi.sh ${kodi_sh_dest}
+if [ $? -eq 0 ]; then
+    sudo chmod +x ${kodi_sh_dest}
+    if [ -x ${kodi_sh_dest} ]; then
+        echo "/usr/lib/kodi/kodi.sh 已成功赋予执行权限。"
+    else
+        echo "赋予 /usr/lib/kodi/kodi.sh 执行权限失败。"
+        exit 1
+    fi
 else
-    echo "赋予 /usr/lib/kodi/kodi.sh 执行权限失败。"
+    echo "复制 kodi.sh 文件到 /usr/lib/kodi 失败。"
     exit 1
 fi
-
-
 
 echo "Compressing SYSTEM image"
 sudo mksquashfs ${system_root} SYSTEM -comp lzo -Xalgorithm lzo1x_999 -Xcompression-level 9 -b 524288 -no-xattrs
@@ -88,7 +80,6 @@ echo "Unmounting CoreELEC boot partition"
 sudo umount -d ${mount_point}
 echo "Mounting CoreELEC data partition"
 sudo mount -o loop,offset=541065216 ${source_img_name}.img ${mount_point}
-
 
 echo "Unmounting CoreELEC data partition"
 sudo umount -d ${mount_point}
