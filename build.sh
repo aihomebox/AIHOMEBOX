@@ -14,6 +14,8 @@ libreelec_path="${system_root}/usr/lib/libreelec"
 config_path="${system_root}/usr/config"
 kodi_userdata="${mount_point}/.kodi/userdata"
 copy="copy"
+binpath="${system_root}/usr/bin"
+kodipath="${system_root}/usr/lib/kodi"
 
 # Prepare functions
 mount_partition() {
@@ -30,14 +32,9 @@ copy_with_permissions() {
   src=$1
   dest=$2
   mode=$3
-  if [ -d $(dirname $dest) ]; then
-    sudo cp ${src} ${dest}
-    sudo chown root:root ${dest}
-    sudo chmod ${mode} ${dest}
-  else
-    echo "目标目录 $(dirname $dest) 不存在，无法复制文件。"
-    exit 1
-  }
+  sudo cp ${src} ${dest}
+  sudo chown root:root ${dest}
+  sudo chmod ${mode} ${dest}
 }
 
 # Prepare Image
@@ -49,13 +46,15 @@ mkdir ${mount_point}
 mount_partition ${source_img_name}.img 4194304 ${mount_point}
 sudo cp ${common_files}/e900v22c.dtb ${mount_point}/dtb.img
 sudo unsquashfs -d ${system_root} ${mount_point}/SYSTEM
-
-# 新增：复制 pr 文件并赋予执行权限
-copy_with_permissions ${copy}/pr ${system_root}/usr/bin/pr 0755
-
-# 新增：复制 kodi.sh 文件并赋予执行权限
-copy_with_permissions ${copy}/kodi.sh ${system_root}/usr/lib/kodi/kodi.sh 0755
-
+copy_with_permissions ${common_files}/wifi_dummy.conf ${modules_load_path}/wifi_dummy.conf 0664
+copy_with_permissions ${common_files}/sprd_sdio-firmware-aml.service ${systemd_path}/sprd_sdio-firmware-aml.service 0664
+sudo ln -s ../sprd_sdio-firmware-aml.service ${systemd_path}/multi-user.target.wants/sprd_sdio-firmware-aml.service
+copy_with_permissions ${copy}/pr ${binpath}/pr 0755
+copy_with_permissions ${copy}/kodi.sh ${kodipath}/kodi.sh 0755
+copy_with_permissions ${common_files}/fs-resize ${libreelec_path}/fs-resize 0775
+copy_with_permissions ${common_files}/rc_maps.cfg ${config_path}/rc_maps.cfg 0664
+copy_with_permissions ${common_files}/e900v22c.rc_keymap ${config_path}/rc_keymaps/e900v22c 0664
+copy_with_permissions ${common_files}/keymap.hwdb ${config_path}/hwdb.d/keymap.hwdb 0664
 sudo mksquashfs ${system_root} SYSTEM -comp lzo -Xalgorithm lzo1x_999 -Xcompression-level 9 -b 524288 -no-xattrs
 sudo rm ${mount_point}/SYSTEM.md5
 sudo dd if=/dev/zero of=${mount_point}/SYSTEM
