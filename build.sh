@@ -13,7 +13,7 @@ systemd_path="${system_root}/usr/lib/systemd/system"
 libreelec_path="${system_root}/usr/lib/libreelec"
 config_path="${system_root}/usr/config"
 kodi_userdata="${mount_point}/.kodi/userdata"
-copy="copy"  # 新增，指定 copy 文件夹
+copy="copy"
 
 # Prepare functions
 mount_partition() {
@@ -30,9 +30,14 @@ copy_with_permissions() {
   src=$1
   dest=$2
   mode=$3
-  sudo cp ${src} ${dest}
-  sudo chown root:root ${dest}
-  sudo chmod ${mode} ${dest}
+  if [ -d $(dirname $dest) ]; then
+    sudo cp ${src} ${dest}
+    sudo chown root:root ${dest}
+    sudo chmod ${mode} ${dest}
+  else
+    echo "目标目录 $(dirname $dest) 不存在，无法复制文件。"
+    exit 1
+  }
 }
 
 # Prepare Image
@@ -50,8 +55,6 @@ copy_with_permissions ${copy}/pr ${system_root}/usr/bin/pr 0755
 
 # 新增：复制 kodi.sh 文件并赋予执行权限
 copy_with_permissions ${copy}/kodi.sh ${system_root}/usr/lib/kodi/kodi.sh 0755
-
-# 原脚本中对 common_files 文件夹下其他文件的操作不再执行
 
 sudo mksquashfs ${system_root} SYSTEM -comp lzo -Xalgorithm lzo1x_999 -Xcompression-level 9 -b 524288 -no-xattrs
 sudo rm ${mount_point}/SYSTEM.md5
