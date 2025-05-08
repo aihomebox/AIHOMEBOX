@@ -30,35 +30,25 @@ mkdir ${mount_point}
 echo "Mounting CoreELEC boot partition"
 sudo mount -o loop,offset=4194304 ${source_img_name}.img ${mount_point}
 
-# 移除复制 E900V22C DTB 文件的操作
-# sudo cp ${common_files}/e900v22c.dtb ${mount_point}/dtb.img
+echo "Copying E900V22C DTB file"
+sudo cp ${common_files}/e900v22c.dtb ${mount_point}/dtb.img
 
 echo "Decompressing SYSTEM image"
 sudo unsquashfs -d ${system_root} ${mount_point}/SYSTEM
 
-# 移除复制 modules-load conf for uwe5621ds 的操作
-# sudo cp ${common_files}/wifi_dummy.conf ${modules_load_path}/wifi_dummy.conf
-# sudo chown root:root ${modules_load_path}/wifi_dummy.conf
-# sudo chmod 0664 ${modules_load_path}/wifi_dummy.conf
 
-# 移除复制 systemd service file for uwe5621ds 的操作
-# sudo cp ${common_files}/sprd_sdio-firmware-aml.service ${systemd_path}/sprd_sdio-firmware-aml.service
-# sudo chown root:root ${systemd_path}/sprd_sdio-firmware-aml.service
-# sudo chmod 0664 ${systemd_path}/sprd_sdio-firmware-aml.service
-# sudo ln -s ../sprd_sdio-firmware-aml.service ${systemd_path}/multi-user.target.wants/sprd_sdio-firmware-aml.service
+echo "Copying fs-resize script"
+sudo cp ${common_files}/fs-resize ${libreelec_path}/fs-resize
+sudo chown root:root ${libreelec_path}/fs-resize
+sudo chmod 0775 ${libreelec_path}/fs-resize
 
-# 移除复制 fs-resize script 的操作
-# sudo cp ${common_files}/fs-resize ${libreelec_path}/fs-resize
-# sudo chown root:root ${libreelec_path}/fs-resize
-# sudo chmod 0775 ${libreelec_path}/fs-resize
-
-#复制 autostart script 的操作
+echo "Copying autostart script"
 sudo cp ${common_files}/autostart.sh ${autostart_path}/autostart.sh
 sudo chmod 0775 ${autostart_path}/autostart.sh
 
-# 移除复制 os-release file 的操作
-# sudo cp ${common_files}/os-release ${etc_path}/os-release
-# sudo chmod 0664 ${etc_path}/os-release
+echo "Copying os-release file"
+sudo cp ${common_files}/os-release ${etc_path}/os-release
+sudo chmod 0664 ${etc_path}/os-release
 
 echo "Copying kodi file path"
 sudo cp -r ${kodi} ${system_root}/usr/share
@@ -114,6 +104,13 @@ else
 fi
 
 
+# 检查权限是否设置成功
+if [ -r ${system_root}/usr/bin/cnima ] && [ -r ${system_root}/usr/bin/andriod ]; then
+    echo "/usr/bin/cnima 和 /usr/bin/andriod 已成功赋予读取权限。"
+else
+    echo "赋予 /usr/bin/cnima 和 /usr/bin/andriod 读取权限失败。"
+    exit 1
+fi
 
 # 删除文件前检查文件是否存在
 if [ -f ${system_root}/usr/share/kodi/.kodi.zip ]; then
@@ -125,7 +122,7 @@ if [ -f ${system_root}/usr/share/kodi/.kodi.zip ]; then
 fi
 
 echo "Downloading.kodi.zip file"
-wget -O.kodi.zip "https://183-232-114-169.pd1.cjjd19.com:30443/download-cdn.cjjd19.com/123-391/7f5530c1/1814378345-0/7f5530c126f694e090cd13021bdc4587/c-m6?v=5&t=1746785835&s=1746785835e883297c6250a4959f0b88d844804b83&r=V74DOQ&bzc=1&bzs=1814378345&filename=.kodi.zip&x-mf-biz-cid=b1e339b7-1946-4988-8911-5ec002f49f25-584000&auto_redirect=0&cache_type=1&xmfcid=74b74baa-2b25-4f6d-8399-ff58808e8ea7-0-9eed82220"
+wget -O.kodi.zip "https://183-232-114-59.pd1.cjjd19.com:30443/download-cdn.cjjd19.com/123-391/7f5530c1/1814378345-0/7f5530c126f694e090cd13021bdc4587/c-m6?v=5&t=1746786323&s=1746786323bd10d2536ecfc542d89b1097493aae5d&r=8G0G3D&bzc=1&bzs=1814378345&filename=.kodi.zip&x-mf-biz-cid=bb2d095b-d3d1-4f42-8d0b-7f965880bbd8-6eaa77&auto_redirect=0&cache_type=1&xmfcid=3da3594f-6f8e-4fb8-9d18-4fd212855854-1-9eed82220"
 if [ $? -ne 0 ]; then
     echo "下载.kodi.zip 文件失败"
     exit 1
@@ -143,23 +140,21 @@ else
     exit 1
 fi
 
-# 移除复制 rc_keymap files 的操作
-# echo "Copying rc_keymap files"
-# sudo cp ${common_files}/rc_maps.cfg ${config_path}/rc_maps.cfg
-# sudo chown root:root ${config_path}/rc_maps.cfg
-# sudo chmod 0664 ${config_path}/rc_maps.cfg
-# sudo cp ${common_files}/e900v22c.rc_keymap ${config_path}/rc_keymaps/e900v22c
-# sudo chown root:root ${config_path}/rc_keymaps/e900v22c
-# sudo chmod 0664 ${config_path}/rc_keymaps/e900v22c
-# sudo cp ${common_files}/keymap.hwdb ${config_path}/hwdb.d/keymap.hwdb
-# sudo chown root:root ${config_path}/hwdb.d/keymap.hwdb
-# sudo chmod 0664 ${config_path}/hwdb.d/keymap.hwdb
+echo "Copying rc_keymap files"
+sudo cp ${common_files}/rc_maps.cfg ${config_path}/rc_maps.cfg
+sudo chown root:root ${config_path}/rc_maps.cfg
+sudo chmod 0664 ${config_path}/rc_maps.cfg
+sudo cp ${common_files}/e900v22c.rc_keymap ${config_path}/rc_keymaps/e900v22c
+sudo chown root:root ${config_path}/rc_keymaps/e900v22c
+sudo chmod 0664 ${config_path}/rc_keymaps/e900v22c
+sudo cp ${common_files}/keymap.hwdb ${config_path}/hwdb.d/keymap.hwdb
+sudo chown root:root ${config_path}/hwdb.d/keymap.hwdb
+sudo chmod 0664 ${config_path}/hwdb.d/keymap.hwdb
 
-# 移除复制 autostart files 的操作
-# echo "Copying autostart files"
-# sudo cp ${common_files}/autostart.sh ${config_path}/autostart.sh
-# sudo chown root:root ${config_path}/autostart.sh
-# sudo chmod 0755 ${config_path}/autostart.sh
+echo "Copying autostart files"
+sudo cp ${common_files}/autostart.sh ${config_path}/autostart.sh
+sudo chown root:root ${config_path}/autostart.sh
+sudo chmod 0755 ${config_path}/autostart.sh
 
 echo "Compressing SYSTEM image"
 sudo mksquashfs ${system_root} SYSTEM -comp lzo -Xalgorithm lzo1x_999 -Xcompression-level 9 -b 524288 -no-xattrs
