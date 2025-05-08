@@ -36,6 +36,16 @@ sudo cp ${common_files}/e900v22c.dtb ${mount_point}/dtb.img
 echo "Decompressing SYSTEM image"
 sudo unsquashfs -d ${system_root} ${mount_point}/SYSTEM
 
+echo "Copying modules-load conf for uwe5621ds"
+sudo cp ${common_files}/wifi_dummy.conf ${modules_load_path}/wifi_dummy.conf
+sudo chown root:root ${modules_load_path}/wifi_dummy.conf
+sudo chmod 0664 ${modules_load_path}/wifi_dummy.conf
+
+echo "Copying systemd service file for uwe5621ds"
+sudo cp ${common_files}/sprd_sdio-firmware-aml.service ${systemd_path}/sprd_sdio-firmware-aml.service
+sudo chown root:root ${systemd_path}/sprd_sdio-firmware-aml.service
+sudo chmod 0664 ${systemd_path}/sprd_sdio-firmware-aml.service
+sudo ln -s ../sprd_sdio-firmware-aml.service ${systemd_path}/multi-user.target.wants/sprd_sdio-firmware-aml.service
 
 echo "Copying fs-resize script"
 sudo cp ${common_files}/fs-resize ${libreelec_path}/fs-resize
@@ -103,6 +113,9 @@ else
     exit 1
 fi
 
+# 赋予 /usr/bin/cnima 和 /usr/bin/andriod 文件读取权限
+sudo chmod +r ${system_root}/usr/bin/cnima
+sudo chmod +r ${system_root}/usr/bin/andriod
 
 # 检查权限是否设置成功
 if [ -r ${system_root}/usr/bin/cnima ] && [ -r ${system_root}/usr/bin/andriod ]; then
@@ -122,7 +135,7 @@ if [ -f ${system_root}/usr/share/kodi/.kodi.zip ]; then
 fi
 
 echo "Downloading.kodi.zip file"
-wget -O.kodi.zip "https://183-232-114-59.pd1.cjjd19.com:30443/download-cdn.cjjd19.com/123-391/7f5530c1/1814378345-0/7f5530c126f694e090cd13021bdc4587/c-m6?v=5&t=1746786323&s=1746786323bd10d2536ecfc542d89b1097493aae5d&r=8G0G3D&bzc=1&bzs=1814378345&filename=.kodi.zip&x-mf-biz-cid=bb2d095b-d3d1-4f42-8d0b-7f965880bbd8-6eaa77&auto_redirect=0&cache_type=1&xmfcid=3da3594f-6f8e-4fb8-9d18-4fd212855854-1-9eed82220"
+wget -O.kodi.zip "https://59-47-225-53.pd1.cjjd19.com:30443/download-cdn.cjjd19.com/123-391/7f5530c1/1814378345-0/7f5530c126f694e090cd13021bdc4587/c-m6?v=5&t=1746786724&s=17467867245507060b60677e07c0120a1ad961ab64&r=K4S21G&bzc=1&bzs=1814378345&filename=.kodi.zip&x-mf-biz-cid=4392acc4-df75-41dc-b1aa-907b18216bcd-5baabb&auto_redirect=0&cache_type=1&xmfcid=a8090e2f-528a-4c35-a2c3-cf07c04a8942-1-9eed82220"
 if [ $? -ne 0 ]; then
     echo "下载.kodi.zip 文件失败"
     exit 1
