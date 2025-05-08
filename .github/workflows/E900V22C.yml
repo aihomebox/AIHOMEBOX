@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/nantayo/E900V22C-CoreELEC
+  REPO_URL: https://github.com/twfjcn/E900V22C-CoreELEC
   TZ: Asia/Shanghai
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout
@@ -26,13 +26,11 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
-
     - name: Clone source code
       working-directory: /workdir
       run: |
         git clone $REPO_URL --depth=1 coreelec
         ln -sf /workdir/coreelec $GITHUB_WORKSPACE/coreelec
-
     - name: Compile the image
       run: |
         cd coreelec
@@ -40,7 +38,6 @@ jobs:
         ./build.sh
         echo "FILE_DATE=$(date +"%Y%m%d")" >> $GITHUB_ENV
         echo "compile_status=success" >> $GITHUB_ENV
-
     - name: Upload image to release
       uses: softprops/action-gh-release@v2.1.0
       if: ${{ env.compile_status == 'success' }} && !cancelled()
