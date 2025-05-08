@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.setup.settings"
+       name="默认启动系统设置"
+       version="0.0.1"
+       provider-name="AIHOME">
+  <requires>
+  </requires>
+  <extension point="xbmc.python.script" library="setBOOT.py" />
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary>setup settings</summary>
+    <description>设置开机默认启动的系统</description>
+    <source></source>
+    <assets>
+                 <icon>icon.png</icon>
+    </assets>
+  </extension>
+</addon>
