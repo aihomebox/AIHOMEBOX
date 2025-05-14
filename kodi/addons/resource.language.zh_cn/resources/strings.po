@@ -19505,13 +19505,13 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#39196"
 msgid "Convert profile 7"
-msgstr "转换配置文件7"
+msgstr "转换Profile 7"
 
 #. Help text for setting "Convert Dolby Vision for compatibility" of label #39196
 #: system/settings/settings.xml
 msgctxt "#39197"
 msgid "Convert Dolby Vision profile 7 to profile 7 MEL or profile 8.1"
-msgstr "将杜比视界配置文件7转换为配置文件7 MEL或配置文件8.1"
+msgstr "将Dolby Vision  Profile 7转换为Profile 7 MEL或Profile 8.1"
 
 #. Title of "Allowed HDR dynamic metadata formats" setting
 msgctxt "#39198"
@@ -19568,13 +19568,13 @@ msgstr "关闭"
 #: system/settings/settings.xml
 msgctxt "#39301"
 msgid "to MEL"
-msgstr "使用MEL"
+msgstr "转换为MEL"
 
 #. Dolby Vision RPU Conversion
 #: system/settings/settings.xml
 msgctxt "#39302"
 msgid "to profile 8.1"
-msgstr "使用配置文件 8.1"
+msgstr "转换为Profile 8.1"
 
 # 40000 to 40800 are reserved for Video Versions feature
 #. Generic video versions label (plural)
@@ -19898,13 +19898,13 @@ msgstr "HDR 信息框架资料：一个 48 字元的基本十六进位字串，�
 #: system/settings/settings.xml
 msgctxt "#50101"
 msgid "Dynamic HDR10+ to Dolby Vision profile 8.1 conversion"
-msgstr "动态将 HDR10+ 转换为杜比视界使用配置文件 8.1"
+msgstr "动态HDR10+ 转换为Dolby Vision Profile 8.1"
 
 #. "Dolby Vision HDR10+"
 #: system/settings/settings.xml
 msgctxt "#50102"
 msgid "Dynamically convert HDR10+ to Dolby Vision profile 8.1 on playback. (port from dovi_tool Aug. 2024)"
-msgstr "在播放时动态将 HDR10+ 转换为杜比视界使用配置文件 8.1。（来自 dovi_tool 的移植，2024 年 8 月）"
+msgstr "在播放时动态将 HDR10+ 转换为杜比视界Profile 8.1。（来自 dovi_tool 的移植，2024 年 8 月）"
 
 #. "Dolby Vision HDR10+"
 #: system/settings/settings.xml
@@ -19916,7 +19916,7 @@ msgstr "峰值亮度来源"
 #: system/settings/settings.xml
 msgctxt "#50104"
 msgid "Source for Peak Brightness when converting from HDR10+ to Dolby Vision Profile 8.1. (port from dovi_tool Aug. 2024)"
-msgstr "从 HDR10+ 转换为杜比视界使用配置文件 8.1 时的峰值亮度来源。（来自 dovi_tool 的移植，2024 年 8 月）"
+msgstr "从HDR10+转换到Dolby Vision Profile 8.1时的峰值亮度源。（来自 dovi_tool 的移植，2024 年 8 月）"
 
 #. "杜比视界 HDR10+"
 #: system/settings/settings.xml
