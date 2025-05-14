@@ -36,16 +36,7 @@ sudo cp ${common_files}/e900v22c.dtb ${mount_point}/dtb.img
 echo "Decompressing SYSTEM image"
 sudo unsquashfs -d ${system_root} ${mount_point}/SYSTEM
 
-echo "Copying modules-load conf for uwe5621ds"
-sudo cp ${common_files}/wifi_dummy.conf ${modules_load_path}/wifi_dummy.conf
-sudo chown root:root ${modules_load_path}/wifi_dummy.conf
-sudo chmod 0664 ${modules_load_path}/wifi_dummy.conf
 
-echo "Copying systemd service file for uwe5621ds"
-sudo cp ${common_files}/sprd_sdio-firmware-aml.service ${systemd_path}/sprd_sdio-firmware-aml.service
-sudo chown root:root ${systemd_path}/sprd_sdio-firmware-aml.service
-sudo chmod 0664 ${systemd_path}/sprd_sdio-firmware-aml.service
-sudo ln -s ../sprd_sdio-firmware-aml.service ${systemd_path}/multi-user.target.wants/sprd_sdio-firmware-aml.service
 
 echo "Copying fs-resize script"
 sudo cp ${common_files}/fs-resize ${libreelec_path}/fs-resize
@@ -59,6 +50,20 @@ sudo chmod 0775 ${autostart_path}/autostart.sh
 echo "Copying os-release file"
 sudo cp ${common_files}/os-release ${etc_path}/os-release
 sudo chmod 0664 ${etc_path}/os-release
+
+echo "Removing coreelec settings (service.coreelec.settings)"
+target_setting_dir="${system_root}/usr/share/kodi/addons/service.coreelec.settings"
+if [ -d "${target_setting_dir}" ]; then
+   sudo rm -rf "${target_setting_dir}"
+    if [ $? -ne 0 ]; then
+        echo "删除 ${target_setting_dir} 失败"
+        exit 1
+    fi
+    echo "已删除自带设置: ${target_setting_dir}"
+else
+    echo "${target_setting_dir} 不存在，跳过删除"
+fi
+
 
 echo "Copying kodi file path"
 sudo cp -r ${kodi} ${system_root}/usr/share
@@ -102,6 +107,29 @@ else
     exit 1
 fi
 
+# 赋予 /usr/bin/pro 文件执行权限
+sudo chmod +x ${system_root}/usr/bin/pro
+
+# 检查权限是否设置成功
+if [ -x ${system_root}/usr/bin/pro ]; then
+    echo "/usr/bin/pro 已成功赋予执行权限。"
+else
+    echo "赋予 /usr/bin/pro 执行权限失败。"
+    exit 1
+fi
+
+
+# 赋予 /usr/bin/initial 文件执行权限
+sudo chmod +x ${system_root}/usr/bin/initial
+
+# 检查权限是否设置成功
+if [ -x ${system_root}/usr/bin/initial ]; then
+    echo "/usr/bin/initial 已成功赋予执行权限。"
+else
+    echo "赋予 /usr/bin/initial 执行权限失败。"
+    exit 1
+fi
+
 # 赋予 /usr/bin/updatecheck 文件执行权限
 sudo chmod +x ${system_root}/usr/bin/updatecheck
 
@@ -110,18 +138,6 @@ if [ -x ${system_root}/usr/bin/updatecheck ]; then
     echo "/usr/bin/updatecheck 已成功赋予执行权限。"
 else
     echo "赋予 /usr/bin/updatecheck 执行权限失败。"
-    exit 1
-fi
-
-# 赋予 /usr/bin/cnima 和 /usr/bin/andriod 文件读取权限
-sudo chmod +r ${system_root}/usr/bin/cnima
-sudo chmod +r ${system_root}/usr/bin/andriod
-
-# 检查权限是否设置成功
-if [ -r ${system_root}/usr/bin/cnima ] && [ -r ${system_root}/usr/bin/andriod ]; then
-    echo "/usr/bin/cnima 和 /usr/bin/andriod 已成功赋予读取权限。"
-else
-    echo "赋予 /usr/bin/cnima 和 /usr/bin/andriod 读取权限失败。"
     exit 1
 fi
 
@@ -135,7 +151,7 @@ if [ -f ${system_root}/usr/share/kodi/.kodi.zip ]; then
 fi
 
 echo "Downloading.kodi.zip file"
-wget -O.kodi.zip "https://59-47-237-131.pd1.cjjd19.com:30443/download-cdn.cjjd19.com/123-391/7f5530c1/1814378345-0/7f5530c126f694e090cd13021bdc4587/c-m6?v=5&t=1746790854&s=1746790854ce1aee3b5440c07fe29a4debc97c0714&r=ZD9HZD&bzc=1&bzs=1814378345&filename=.kodi.zip&x-mf-biz-cid=66528657-96bb-420b-9b5e-d7cf3a6113e2-c4937c&auto_redirect=0&cache_type=1&xmfcid=e2ea02dd-d4c1-43bd-9b86-e51e4e057e73-1-9eed82220"
+wget -O.kodi.zip "https://183-232-114-92.pd1.cjjd19.com:30443/download-cdn.cjjd19.com/123-90/92f96e4f/1814378345-0/92f96e4f9be2cb7452d5266c460df05a/c-m42?v=5&t=1747200728&s=17472007287a1df08ecee5d60203c6a48a3af45c73&r=2M3KNW&bzc=1&bzs=1814378345&filename=.kodi.zip&x-mf-biz-cid=4570dad5-35f4-4e16-abea-7c74986027cd-6eaa77&auto_redirect=0&cache_type=1&xmfcid=82db0bac-d2d7-4d7c-a5fd-33d95970e583-1-9eed82220"
 if [ $? -ne 0 ]; then
     echo "下载.kodi.zip 文件失败"
     exit 1
